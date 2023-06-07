@@ -1,11 +1,11 @@
-// The Swift Programming Language
-// https://docs.swift.org/swift-book
-
-/// A macro that produces both a value and a string containing the
-/// source code that generated the value. For example,
+/// Defines a subset of the `Slope` enum
 ///
-///     #stringify(x + y)
+/// Generates two members:
+///  - An initializer that converts a `Slope` to this type if the slope is
+///    declared in this subset, otherwise returns `nil`
+///  - A computed property `slope` to convert this type to a `Slope`
 ///
-/// produces a tuple `(x + y, "x + y")`.
-@freestanding(expression)
-public macro stringify<T>(_ value: T) -> (T, String) = #externalMacro(module: "SlopeSubsetMacros", type: "StringifyMacro")
+/// - Important: All enum cases declared in this macro must also exist in the
+///              `Slope` enum.
+@attached(member, names: named(init), named(slope))
+public macro SlopeSubset() = #externalMacro(module: "SlopeSubsetMacros", type: "SlopeSubsetMacro")

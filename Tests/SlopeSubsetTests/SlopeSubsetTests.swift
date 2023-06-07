@@ -3,31 +3,64 @@ import SwiftSyntaxMacrosTestSupport
 import XCTest
 import SlopeSubsetMacros
 
+
 let testMacros: [String: Macro.Type] = [
-    "stringify": StringifyMacro.self,
+    "SlopeSubset": SlopeSubsetMacro.self
 ]
 
 final class SlopeSubsetTests: XCTestCase {
-    func testMacro() {
+    func testSlopeSubset() {
         assertMacroExpansion(
             """
-            #stringify(a + b)
-            """,
-            expandedSource: """
-            (a + b, "a + b")
-            """,
-            macros: testMacros
+            @SlopeSubset
+            enum EasySlope {
+                case begginerParadise
+                case practiceRun
+            }
+            """, expandedSource:
+            """
+            
+            enum EasySlope {
+                case begginerParadise
+                case practiceRun
+                init?(_ slope: Slope) {
+                    switch slope {
+                    case .begginerParadise:
+                        self = .begginerParadise
+                    case .practiceRun:
+                        self = .practiceRun
+                    default:
+                        return nil
+                    }
+                }
+                var slope: Slope {
+                    switch self {
+                    case .begginerParadise:
+                        return Slope.begginerParadise
+                    case .practiceRun:
+                        return Slope.practiceRun
+                    }
+                }
+            }
+            """, macros: testMacros
         )
     }
-
-    func testMacroWithStringLiteral() {
+    
+    func testSlopeSubsetOnStruct() throws {
         assertMacroExpansion(
-            #"""
-            #stringify("Hello, \(name)")
-            """#,
-            expandedSource: #"""
-            ("Hello, \(name)", #""Hello, \(name)""#)
-            """#,
+            """
+            @SlopeSubset
+            struct Skier {
+            }
+            """,
+            expandedSource: """
+
+            struct Skier {
+            }
+            """,
+            diagnostics: [
+                DiagnosticSpec(message: "@SlopeSubset can only be applied to an enum", line: 1, column: 1)
+            ],
             macros: testMacros
         )
     }

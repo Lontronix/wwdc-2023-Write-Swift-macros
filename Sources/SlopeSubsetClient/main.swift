@@ -1,8 +1,18 @@
 import SlopeSubset
 
-let a = 17
-let b = 25
+/// Slopes in my favorite ski resort.
+enum Slope {
+    case beginnersParadise
+    case practiceRun
+    case livingRoom
+    case olympicRun
+    case blackBeauty
+}
 
-let (result, code) = #stringify(a + b)
+/// Slopes suitable for beginners. Subset of `Slopes`.
+@SlopeSubset
+enum EasySlope {
+    case beginnersParadise
+    case practiceRun
+}
 
-print("The value \(result) was produced by the code \"\(code)\"")
